@@ -1,23 +1,35 @@
-import { useState } from "react";
+/* eslint-disable eqeqeq */
 import "../styles/Content.scss";
 import Menu from "./Menu";
+import Cart from "./Cart";
+import { Switch, Route, useLocation } from "react-router-dom";
 
 const Content = (props) => {
   const content_pages = [
     // menu, cart, checkout
-    { id: "menu", title: "MENU", component: Menu },
-    { id: "cart", title: "Cart", component: Menu },
-    { id: "checkout", title: "", component: Menu },
+    { id: "/", title: "MENU", component: Menu },
+    { id: "/menu", title: "MENU", component: Menu },
+    { id: "/cart", title: "REVIEW CART", component: Cart },
+    // { id: "/checkout", title: "CHECKOUT", component: Menu },
   ];
 
-  const [activePage, setActivePage] = useState(content_pages[0]);
+  const location = useLocation();
+
+  const activePage = content_pages.find((page) => page.id == location.pathname);
+  console.log({ location, activePage });
 
   return (
-    <div className="rounded-top content-container mt-3">
+    <div className="d-flex flex-column rounded-top content-container mt-3">
       <div className="fw-bold fs-4 text-center mb-4 mt-2">
         {activePage.title}
       </div>
-      <activePage.component />
+      <Switch>
+        {content_pages.map((page, i) => (
+          <Route key={i} path={`${page.id}`} exact={page.id == "/"}>
+            <page.component />
+          </Route>
+        ))}
+      </Switch>
     </div>
   );
 };

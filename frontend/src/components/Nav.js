@@ -1,19 +1,28 @@
 /* eslint-disable eqeqeq */
-import { useState } from "react";
 import { Row, Col } from "react-bootstrap";
+import { useHistory, useLocation } from "react-router-dom";
 import logo from "../assets/logo1.jpg";
 import "../styles/Nav.scss";
+import { BookOpen, ShoppingBag } from "react-feather";
 
 export const Nav = (props) => {
-  const [isCart, setIsCart] = useState(false);
+  const location = useLocation();
+  const history = useHistory();
+
+  const isCart = location.pathname == "/cart";
 
   let buttons = [
-    { id: "cart", title: "View cart", onclick: () => setIsCart(true) },
-    { id: "menu", title: "View menu", onclick: () => setIsCart(false) },
     {
-      id: "checkout",
-      title: "Checkout",
-      onclick: () => null,
+      id: "cart",
+      title: "View cart",
+      icon: ShoppingBag,
+      onclick: () => history.push("/cart"),
+    },
+    {
+      id: "menu",
+      title: "View menu",
+      icon: BookOpen,
+      onclick: () => history.push("/menu"),
     },
   ];
 
@@ -44,9 +53,10 @@ export const Nav = (props) => {
                 key={i}
                 onClick={button.onclick}
                 style={{ backgroundColor: "#FF571E" }}
-                className="me-2 px-2 py-1 rounded-pill gradient-background btn"
+                className="d-flex align-items-end me-2 px-2 py-1 rounded-pill gradient-background btn"
               >
-                {button.title}
+                {/* <button.icon size={12} strokeWidth={2} /> */}
+                <div className="ms-1 lh-1">{button.title}</div>
               </div>
             ))}
         </div>

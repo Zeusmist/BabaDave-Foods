@@ -5,6 +5,8 @@ import MenuItemImages from "./MenuItemImages";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem, removeItem } from "../redux/slices/cart";
+import { PlusSquare } from "react-feather";
+import { useHistory } from "react-router-dom";
 
 const demo_products = [
   { id: "spag", title: "spag", images: allProductImages.spag, price: "150.40" },
@@ -47,9 +49,12 @@ const Menu = (props) => {
   const containerRef = useRef(null);
   const cartInfoContainerRef = useRef(null);
 
+  const history = useHistory();
+
   const { cartItems, cartQuantity, cartTotal } = useSelector(
     (state) => state.cart
   );
+
   const dispatch = useDispatch();
 
   const updateCart = (action, product) => {
@@ -77,11 +82,11 @@ const Menu = (props) => {
                 <div>{product.title}</div>
                 <div>₦{product.price}</div>
               </div>
-              <div onClick={() => updateCart("add", product)}>
-                <i
-                  className="fa fa-plus-square fs-4 btn p-0"
-                  style={{ color: "#FE9D2B" }}
-                ></i>
+              <div
+                className="btn p-0"
+                onClick={() => updateCart("add", product)}
+              >
+                <PlusSquare color="#FE9D2B" strokeWidth={2} />
               </div>
             </div>
           </div>
@@ -100,8 +105,15 @@ const Menu = (props) => {
       >
         {/* mini order info */}
         <div>{cartQuantity} Items</div>
-        <div style={{ cursor: "pointer" }}>VIEW CART</div>
-        <div>₦{cartTotal.toLocaleString("en-US")}</div>
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => history.push("/cart")}
+        >
+          VIEW CART
+        </div>
+        <div>
+          ₦{cartTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+        </div>
       </div>
     </div>
   );
