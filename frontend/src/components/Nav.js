@@ -3,26 +3,38 @@ import { Row, Col } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router-dom";
 import logo from "../assets/logo1.jpg";
 import "../styles/Nav.scss";
-import { BookOpen, ShoppingBag } from "react-feather";
+import { BookOpen, LogIn, ShoppingBag } from "react-feather";
 
 export const Nav = (props) => {
   const location = useLocation();
   const history = useHistory();
 
-  const isCart = location.pathname == "/cart";
+  const isMenu = location.pathname == "/menu" || location.pathname == "/";
 
   let buttons = [
     {
       id: "cart",
-      title: "View cart",
+      title: "VIEW CART",
       icon: ShoppingBag,
       onclick: () => history.push("/cart"),
     },
     {
       id: "menu",
-      title: "View menu",
+      title: "VIEW MENU",
       icon: BookOpen,
       onclick: () => history.push("/menu"),
+    },
+    {
+      id: "login",
+      title: "LOG IN",
+      icon: LogIn,
+      onclick: () => history.push("/login"),
+    },
+    {
+      id: "signup",
+      title: "SIGN UP",
+      icon: LogIn,
+      onclick: () => history.push("/signup"),
     },
   ];
 
@@ -46,13 +58,12 @@ export const Nav = (props) => {
         <div className="d-flex pt-3 justify-content-center ">
           {buttons
             .filter((button) =>
-              !isCart ? button.id != "menu" : button.id != "cart"
+              isMenu ? button.id != "menu" : button.id != "cart"
             )
             .map((button, i) => (
               <div
                 key={i}
                 onClick={button.onclick}
-                style={{ backgroundColor: "#FF571E" }}
                 className="d-flex align-items-end me-2 px-2 py-1 rounded-pill gradient-background btn"
               >
                 {/* <button.icon size={12} strokeWidth={2} /> */}

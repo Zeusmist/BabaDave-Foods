@@ -3,14 +3,22 @@ import "../styles/Content.scss";
 import Menu from "./Menu";
 import Cart from "./Cart";
 import { Switch, Route, useLocation } from "react-router-dom";
+import Checkout from "./Checkout";
+import Authenticate from "./Authenticate";
 
 const Content = (props) => {
   const content_pages = [
-    // menu, cart, checkout
     { id: "/", title: "MENU", component: Menu },
     { id: "/menu", title: "MENU", component: Menu },
     { id: "/cart", title: "REVIEW CART", component: Cart },
-    // { id: "/checkout", title: "CHECKOUT", component: Menu },
+    { id: "/checkout", title: "CHECKOUT", component: Checkout },
+    { id: "/login", title: "LOG IN", component: Authenticate },
+    {
+      id: "/signup",
+      title: "SIGN UP",
+      component: Authenticate,
+      props: { signup: true },
+    },
   ];
 
   const location = useLocation();
@@ -26,7 +34,7 @@ const Content = (props) => {
       <Switch>
         {content_pages.map((page, i) => (
           <Route key={i} path={`${page.id}`} exact={page.id == "/"}>
-            <page.component />
+            <page.component {...(page.props ? page.props : {})} />
           </Route>
         ))}
       </Switch>
