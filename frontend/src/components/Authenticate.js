@@ -1,17 +1,25 @@
 /* eslint-disable eqeqeq */
 import React from "react";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
+  sendEmailVerification,
 } from "firebase/auth";
+import { auth, db } from "../config";
+import { addDoc, collection } from "@firebase/firestore";
 
 const inputFields = [
   { id: "firstName", label: "First Name" },
   { id: "lastName", label: "Last Name" },
   { id: "phone", label: "Mobile number", type: "number" },
   { id: "email", label: "E-mail", type: "email" },
-  { id: "password", label: "Password", type: "password" },
+  {
+    id: "password",
+    label: "Password (Min 6 characters)",
+    type: "password",
+    extraAttributes: { pattern: ".{6,}" },
+  },
   { id: "confirmPassword", label: "Confirm Password", type: "password" },
 ];
 
@@ -24,30 +32,44 @@ class Authenticate extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { signup } = this.props;
-    const auth = getAuth();
-    if (signup) this.registerUser(auth);
-    else this.loginUser(auth);
+    if (signup) this.registerUser();
+    else this.loginUser();
   };
 
-  registerUser = (auth) => {
-    const { firstName, lastName, phone, email, password, confirmPassword } =
-      this.props;
+  registerUser = async () => {
+    const { firstName, email, password, confirmPassword } = this.state;
     if (password != confirmPassword) {
       alert("password must be same as confirm password");
       return;
     } else {
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
           const user = userCredential.user;
           console.log({ user });
+          await updateProfile(auth.currentUser, { displayName: firstName });
+          sendEmailVerification(auth.currentUser);
         })
         .catch((err) => {
           console.log(err.code + ": " + err.message);
+          alert(`${err.code}`.replace("auth/", "").replaceAll("-", " "));
         });
     }
   };
 
-  loginUser = (auth) => {
+  // CONTINUE FROM HERE!!!!
+
+  // createUserInDB = async () => {
+  //   const { firstName, lastName, phone, email, password } = this.state;
+  //   const docRef = await addDoc(collection(db, "users"), {
+  //     firstName,
+  //     lastName,
+  //     phone,
+  //     email,
+  //     password,
+  //   });
+  // };
+
+  loginUser = () => {
     const { email, password } = this.state;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -71,18 +93,23 @@ class Authenticate extends React.Component {
             .filter((field) =>
               !signup ? field.id == "email" || field.id == "password" : true
             )
-            .map((field) => (
-              <input
-                type={field.type ?? "text"}
-                className="form-control mb-3"
-                value={this.state[field.id] ?? ""}
-                onChange={(e) =>
-                  this.handleInputChange(field.id, e.target.value)
-                }
-                placeholder={field.label}
-                required
-              />
-            ))}
+            .map((field, i) => {
+              const extraAttributes = field?.extraAttributes ?? {};
+              return (
+                <input
+                  key={i}
+                  type={field.type ?? "text"}
+                  className="form-control mb-3"
+                  value={this.state[field.id] ?? ""}
+                  onChange={(e) =>
+                    this.handleInputChange(field.id, e.target.value)
+                  }
+                  placeholder={field.label}
+                  required
+                  {...extraAttributes}
+                />
+              );
+            })}
           {!signup && <div className="btn p-0 mb-3">Forgot password?</div>}
           <input
             type="submit"
