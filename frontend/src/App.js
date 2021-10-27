@@ -33,7 +33,9 @@ function App() {
     // fetch user data and update in app
     console.log("SETTING USER DATA");
     const docSnap = await getDoc(doc(db, "users", uid));
-    if (docSnap.exists) dispatch(updateInfo({ info: docSnap.data() }));
+    let userData = docSnap.data();
+    delete userData.password;
+    if (docSnap.exists) dispatch(updateInfo({ info: userData }));
   };
 
   return (
