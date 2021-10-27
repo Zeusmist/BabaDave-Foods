@@ -7,7 +7,9 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import { auth, db } from "../config";
-import { addDoc, collection } from "@firebase/firestore";
+import { doc, setDoc } from "@firebase/firestore";
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 
 const inputFields = [
   { id: "firstName", label: "First Name" },
@@ -29,6 +31,19 @@ class Authenticate extends React.Component {
     this.state = {};
   }
 
+  componentDidMount() {
+    const { info, history } = this.props;
+    if (info) {
+      history.goBack();
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.info && !!this.props.info) {
+      this.props.history.push("/cart");
+    }
+  }
+
   handleSubmit = (e) => {
     e.preventDefault();
     const { signup } = this.props;
@@ -44,8 +59,10 @@ class Authenticate extends React.Component {
     } else {
       await createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential) => {
-          const user = userCredential.user;
-          console.log({ user });
+          const { user } = userCredential;
+          await this.createUserInDB(user.uid);
+          user.reload();
+          this.props.history.push("/menu");
           await updateProfile(auth.currentUser, { displayName: firstName });
           sendEmailVerification(auth.currentUser);
         })
@@ -56,28 +73,28 @@ class Authenticate extends React.Component {
     }
   };
 
-  // CONTINUE FROM HERE!!!!
-
-  // createUserInDB = async () => {
-  //   const { firstName, lastName, phone, email, password } = this.state;
-  //   const docRef = await addDoc(collection(db, "users"), {
-  //     firstName,
-  //     lastName,
-  //     phone,
-  //     email,
-  //     password,
-  //   });
-  // };
+  createUserInDB = async (uid) => {
+    const { firstName, lastName, phone, email, password } = this.state;
+    await setDoc(doc(db, "users", uid), {
+      firstName,
+      lastName,
+      phone,
+      email,
+      password,
+    });
+  };
 
   loginUser = () => {
     const { email, password } = this.state;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        this.props.history.push("/menu");
         console.log({ user });
       })
       .catch((err) => {
         console.log(err.code + ": " + err.message);
+        alert(`${err.code}`.replace("auth/", "").replaceAll("-", " "));
       });
   };
 
@@ -123,4 +140,10 @@ class Authenticate extends React.Component {
   }
 }
 
-export default Authenticate;
+const mapState = (state) => {
+  const { info } = state.user;
+  console.log("info from auth == ", info);
+  return { info };
+};
+
+export default withRouter(connect(mapState)(Authenticate));

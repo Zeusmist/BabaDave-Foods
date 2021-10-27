@@ -1,38 +1,48 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.scss";
 import Container from "react-bootstrap/Container";
 import { Nav } from "./components/Nav";
 import Content from "./components/Content";
-import store from "./redux/store";
-import { Provider } from "react-redux";
+import { useDispatch } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "@firebase/auth";
-import { auth } from "./config";
+import { auth, db } from "./config";
+import { removeInfo, updateInfo } from "./redux/slices/user";
+import { doc, getDoc } from "@firebase/firestore";
 
 function App() {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // update user in app
+        dispatch(updateInfo({ info: {} }));
         console.log({ user });
-        // ...
+        setUserData(user.uid);
       } else {
-        // update user in app
+        // remove user details from app
         console.log({ user });
+        dispatch(removeInfo());
       }
     });
   }, []);
 
+  const setUserData = async (uid) => {
+    // fetch user data and update in app
+    console.log("SETTING USER DATA");
+    const docSnap = await getDoc(doc(db, "users", uid));
+    if (docSnap.exists) dispatch(updateInfo({ info: docSnap.data() }));
+  };
+
   return (
-    <Provider store={store}>
-      <Container className="main-container" fluid>
-        <Router>
-          <Nav />
-          <Content />
-        </Router>
-      </Container>
-    </Provider>
+    <Container className="main-container" fluid>
+      <Router>
+        <Nav />
+        <Content />
+      </Router>
+    </Container>
   );
 }
 

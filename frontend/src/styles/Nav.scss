@@ -9,11 +9,23 @@
 
 @media only screen and (max-width: 767px) {
   .navbar-container {
-    padding-top: 30px;
-
     .navbar-image {
       height: 65px;
       width: 65px;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .navbar-container {
+    padding-top: 30px;
+
+    .nav-description {
+      text-align: center;
+    }
+
+    .nav-buttons {
+      justify-content: center;
     }
   }
 }
