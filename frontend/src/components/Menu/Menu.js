@@ -1,10 +1,10 @@
 /* eslint-disable eqeqeq */
-import "../styles/Menu.scss";
-import allProductImages from "../assets/images/products";
+import "../../styles/Menu.scss";
+import allProductImages from "../../assets/images/products";
 import MenuItemImages from "./MenuItemImages";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addItem, removeItem } from "../redux/slices/cart";
+import { addItem, removeItem } from "../../redux/slices/cart";
 import { PlusSquare } from "react-feather";
 import { useHistory } from "react-router-dom";
 

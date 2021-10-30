@@ -1,7 +1,9 @@
+/* eslint-disable eqeqeq */
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   info: null,
+  addresses: [],
 };
 
 export const userSlice = createSlice({
@@ -17,8 +19,29 @@ export const userSlice = createSlice({
       console.log("Removing user");
       return initialState;
     },
+    addAddress: (state, action) => {
+      const { address } = action.payload;
+      console.log("Added address");
+      state.addresses.push(address);
+    },
+    updateAddress: (state, action) => {
+      const { id, updatedAddress } = action.payload;
+      const index = state.findIndex((a) => a.id == id);
+      if (index > -1) state[index] = { ...updatedAddress };
+    },
+    removeAddress: (state, action) => {
+      const { id } = action.payload;
+      const index = state.findIndex((a) => a.id == id);
+      if (index > -1) state[index] = state.splice(index, 1);
+    },
   },
 });
 
-export const { updateInfo, removeInfo } = userSlice.actions;
+export const {
+  updateInfo,
+  removeInfo,
+  addAddress,
+  updateAddress,
+  removeAddress,
+} = userSlice.actions;
 export default userSlice.reducer;

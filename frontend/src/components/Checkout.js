@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import AddressFinder from "./Address/AddressFinder";
 
 const Checkout = (props) => {
   const { info } = useSelector((state) => state.user);
@@ -10,11 +11,16 @@ const Checkout = (props) => {
     { label: "Phone", value: info?.phone },
   ];
 
-  const headerClassName = "fs-4 fw-bold mb-2";
+  const RenderSection = (p) => (
+    <div className="m-3 mt-0">
+      <div className="fs-5 fw-bold mb-2">{p.title}</div>
+      {p.children}
+    </div>
+  );
+
   return (
     <div>
-      <div className="m-3 mt-0">
-        <div className={headerClassName}>Contact Details</div>
+      <RenderSection title="Contact Details">
         <div className="d-flex">
           <div className="me-3">
             {userData.map((data, i) => (
@@ -31,13 +37,13 @@ const Checkout = (props) => {
             ))}
           </div>
         </div>
-      </div>
+      </RenderSection>
 
-      <div className={headerClassName}>Delivery Address</div>
+      <RenderSection title="Delivery Address">
+        <AddressFinder />
+      </RenderSection>
 
-      <div className={headerClassName}>Payment Method</div>
-
-      <div></div>
+      <RenderSection title="Payment Method"></RenderSection>
     </div>
   );
 };

@@ -9,8 +9,8 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { useEffect } from "react";
 import { onAuthStateChanged } from "@firebase/auth";
 import { auth, db } from "./config";
-import { removeInfo, updateInfo } from "./redux/slices/user";
-import { doc, getDoc } from "@firebase/firestore";
+import { addAddress, removeInfo, updateInfo } from "./redux/slices/user";
+import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
 
 function App() {
   const dispatch = useDispatch();
@@ -32,10 +32,22 @@ function App() {
   const setUserData = async (uid) => {
     // fetch user data and update in app
     console.log("SETTING USER DATA");
-    const docSnap = await getDoc(doc(db, "users", uid));
-    let userData = docSnap.data();
-    delete userData.password;
-    if (docSnap.exists) dispatch(updateInfo({ info: userData }));
+
+    // fetch user info
+    const info_docSnap = await getDoc(doc(db, "users", uid));
+    if (info_docSnap.exists) {
+      let userInfo = info_docSnap.data();
+      delete userInfo.password;
+      dispatch(updateInfo({ info: userInfo }));
+    }
+
+    // fetch user addresses
+    const addresses_querySnapshot = await getDocs(
+      collection(db, `users/${uid}/addresses`)
+    );
+    addresses_querySnapshot.forEach((d) => {
+      dispatch(addAddress({ address: { id: d.id, ...d.data() } }));
+    });
   };
 
   return (

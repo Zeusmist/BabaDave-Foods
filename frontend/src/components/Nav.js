@@ -76,12 +76,12 @@ export const Nav = (props) => {
           <br />
           Meals that Tickle your Eyes,Tickle Your Nose and Tickle Your Tummy 😜
         </div>
-        <div className="nav-buttons d-flex pt-3 ">
+        <div className="nav-buttons d-flex pt-2 flex-wrap ">
           {btns.map((button, i) => (
             <div
               key={i}
               onClick={button.onclick}
-              className="d-flex align-items-end me-2 px-2 py-1 rounded-pill gradient-background btn"
+              className="d-flex align-items-end me-2 mt-1 px-2 py-1 rounded-pill gradient-background btn"
             >
               {/* <button.icon size={12} strokeWidth={2} /> */}
               <div className="ms-1 lh-1">{button.title}</div>

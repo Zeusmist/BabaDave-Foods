@@ -1,7 +1,7 @@
 /* eslint-disable eqeqeq */
 import "../styles/Content.scss";
-import Menu from "./Menu";
-import Cart from "./Cart";
+import Menu from "./Menu/Menu";
+import Cart from "./Cart/Cart";
 import { Switch, Route, useLocation, useHistory } from "react-router-dom";
 import Checkout from "./Checkout";
 import Authenticate from "./Authenticate";
