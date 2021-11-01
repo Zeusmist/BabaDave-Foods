@@ -37,11 +37,9 @@ class App extends React.Component {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         updateInfo({ info: {} });
-        console.log({ user });
         this.setUserData(user.uid);
       } else {
         // remove user details from app
-        console.log({ user });
         removeInfo();
       }
     });
@@ -50,7 +48,6 @@ class App extends React.Component {
   setUserData = async (uid) => {
     const { updateInfo, addAddress } = this.props;
     // fetch user data and update in app
-    console.log("SETTING USER DATA");
 
     // fetch user info
     const info_docSnap = await getDoc(doc(db, "users", uid));

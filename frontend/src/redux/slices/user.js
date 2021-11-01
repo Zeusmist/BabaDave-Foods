@@ -12,16 +12,13 @@ export const userSlice = createSlice({
   reducers: {
     updateInfo: (state, action) => {
       const { info } = action.payload;
-      console.log("Setting user in app", { ...info });
       state.info = info;
     },
     removeInfo: (state, action) => {
-      console.log("Removing user");
       return initialState;
     },
     addAddress: (state, action) => {
       const { address } = action.payload;
-      console.log("Added address");
       state.addresses.push(address);
     },
     updateAddress: (state, action) => {

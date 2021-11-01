@@ -88,9 +88,7 @@ class Authenticate extends React.Component {
     const { email, password } = this.state;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const user = userCredential.user;
         this.props.history.push("/menu");
-        console.log({ user });
       })
       .catch((err) => {
         console.log(err.code + ": " + err.message);
@@ -142,7 +140,6 @@ class Authenticate extends React.Component {
 
 const mapState = (state) => {
   const { info } = state.user;
-  console.log("info from auth == ", info);
   return { info };
 };
 

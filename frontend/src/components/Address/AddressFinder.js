@@ -11,7 +11,6 @@ const AddressFinder = (props) => {
 
   const handleNewAddress = (newAddressID) => {
     const index = addresses.findIndex((a) => a.id == newAddressID);
-    console.log("imdex: ", newAddressID, "--", index);
     if (index > -1) {
       setSelectedAddress(addresses[index]);
     }
