@@ -1,0 +1,9 @@
+calculate and include delivery fee
+
+use checkpoints coords to make polygon
+check for polygon that contains address coords using maps geometry containsLocation.
+
+
+
+handle check discount
+handle checkout & clear cart from local storage

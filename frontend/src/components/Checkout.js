@@ -1,9 +1,16 @@
 /* eslint-disable eqeqeq */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import {
+  lagos_coords,
+  mainland_level1_coords,
+  office_coords,
+} from "../utils/map";
 import AddressFinder from "./Address/AddressFinder";
 
 // TODO: handle check discount, calculate and include delivery fee, handle checkout & clear cart from local storage
+
+let map;
 
 const RenderSection = (p) => {
   return (
@@ -88,8 +95,29 @@ const Checkout = (props) => {
     </div>
   );
 
+  // CODE BELOW IS FOR TESTING MAP LOGIC
+  const mapRef = useRef();
+  useEffect(() => {
+    map = new window.google.maps.Map(mapRef.current, {
+      center: office_coords,
+      zoom: 11,
+    });
+
+    // const cityCircle = new window.google.maps.Circle({
+    //   map,
+    //   center: lagos_coords,
+    //   radius: 20000,
+    // });
+    const polygon = new window.google.maps.Polygon({
+      paths: mainland_level1_coords,
+    });
+    polygon.setMap(map);
+  }, []);
+
   return (
     <div>
+      <div ref={mapRef} style={{ height: 300, width: "100%" }}></div>
+
       <RenderSection title="Contact Details">
         {renderInformationFlex(userData)}
       </RenderSection>

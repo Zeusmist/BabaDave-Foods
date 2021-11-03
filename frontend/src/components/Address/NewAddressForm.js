@@ -4,6 +4,7 @@ import { addDoc, collection } from "@firebase/firestore";
 import { auth, db } from "../../config";
 import { addAddress } from "../../redux/slices/user";
 import { useDispatch } from "react-redux";
+import { office_coords } from "../../utils/map";
 let google = window.google;
 let map, service, startingPoint;
 
@@ -17,7 +18,10 @@ const NewAddressForm = (props) => {
   const dispatch = useDispatch();
 
   const initMap = () => {
-    startingPoint = new google.maps.LatLng(6.5584, 3.3915);
+    startingPoint = new google.maps.LatLng(
+      office_coords.lat,
+      office_coords.lng
+    );
     map = new google.maps.Map(mapRef.current, {
       center: startingPoint,
       zoom: 15,
@@ -92,8 +96,6 @@ const NewAddressForm = (props) => {
     }
     setIsSavingAddress(false);
   };
-
-  console.log({ newAddress });
 
   return (
     <form onSubmit={handleSaveAddress}>
