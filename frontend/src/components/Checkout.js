@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AddressFinder from "./Address/AddressFinder";
 
-// TODO: handle check discount, calculate and include delivery fee, handle checkout
+// TODO: handle check discount, calculate and include delivery fee, handle checkout & clear cart from local storage
 
 const RenderSection = (p) => {
   return (
@@ -131,7 +131,10 @@ const Checkout = (props) => {
             )}
           </div>
         </div>
-        <div className="btn btn-success w-100 mt-5" onClick={handleCheckout}>
+        <div
+          className="btn btn-success btn-lg w-100 mt-5"
+          onClick={handleCheckout}
+        >
           Make Payment
         </div>
       </RenderSection>

@@ -9,11 +9,12 @@ const AddressFinder = (props) => {
   const { addresses } = useSelector((state) => state.user);
   const [selectedAddress, setSelectedAddress] = useState(addresses[0] ?? null);
 
-  const handleNewAddress = (newAddressID) => {
-    const index = addresses.findIndex((a) => a.id == newAddressID);
-    if (index > -1) {
-      setSelectedAddress(addresses[index]);
+  const handleNewAddress = ({ id, address }) => {
+    if (id) {
+      const index = addresses.findIndex((a) => a.id == id);
+      if (index > -1) address = addresses[index];
     }
+    if (address) setSelectedAddress(address);
     setIsAddingAddress(false);
   };
 
@@ -26,7 +27,7 @@ const AddressFinder = (props) => {
       >
         {<Home className="me-1" size={20} strokeWidth={3} />}
         {selectedAddress
-          ? `${selectedAddress.number ? selectedAddress.number + " ," : ""} ${
+          ? `${selectedAddress.number ? selectedAddress.number + "," : ""} ${
               selectedAddress?.street
             }`
           : "No saved address"}

@@ -22,10 +22,10 @@ const ChangeAddress = (props) => {
               key={i}
               className="list-group-item py-1 px-2 d-flex align-items-center text-capitalize"
               style={{ cursor: "pointer" }}
-              onClick={() => props.onComplete(address.id)}
+              onClick={() => props.onComplete({ id: address.id })}
             >
               <MapPin size={14} strokeWidth={3} className="me-1" />{" "}
-              {address.number ? address.number + " ," : ""} {address.street}
+              {address.number ? address.number + "," : ""} {address.street}
             </li>
           ))}
         </ul>
@@ -39,7 +39,10 @@ const ChangeAddress = (props) => {
           Add new address
         </div>
       ) : (
-        <NewAddressForm onCancel={() => setAddingNewAddress(false)} />
+        <NewAddressForm
+          onCancel={() => setAddingNewAddress(false)}
+          onComplete={props.onComplete}
+        />
       )}
     </div>
   );

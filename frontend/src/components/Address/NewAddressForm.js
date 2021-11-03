@@ -48,7 +48,7 @@ const NewAddressForm = (props) => {
         service.textSearch(request, (results, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
             setSearchResults(results);
-            map.setCenter(results[0].geometry.location);
+            // map.setCenter(results[0].geometry.location);
           }
         });
       }
@@ -61,7 +61,7 @@ const NewAddressForm = (props) => {
   const handleSelectAddress = (address) => {
     setNewAddress({
       ...(newAddress ?? {}),
-      street: address,
+      ...address,
     });
     cleanSearch();
   };
@@ -81,10 +81,9 @@ const NewAddressForm = (props) => {
       await addDoc(collection(db, `users/${uid}/addresses`), newAddress)
         .then((docRef) => {
           newAddressID = docRef.id;
-          dispatch(
-            addAddress({ address: { id: newAddressID, ...newAddress } })
-          );
-          if (props.onComplete) props.onComplete(newAddressID);
+          const address = { id: newAddressID, ...newAddress };
+          dispatch(addAddress({ address }));
+          if (props.onComplete) props.onComplete({ address });
         })
         .catch((err) => {
           console.log(err);
@@ -93,6 +92,8 @@ const NewAddressForm = (props) => {
     }
     setIsSavingAddress(false);
   };
+
+  console.log({ newAddress });
 
   return (
     <form onSubmit={handleSaveAddress}>
@@ -120,7 +121,13 @@ const NewAddressForm = (props) => {
                 style={{ cursor: "pointer" }}
                 onMouseDown={(e) => {
                   e.preventDefault();
-                  handleSelectAddress(formatAddress(res));
+                  handleSelectAddress({
+                    street: formatAddress(res),
+                    coords: {
+                      lat: res.geometry.location.lat(),
+                      long: res.geometry.location.lng(),
+                    },
+                  });
                 }}
               >
                 {formatAddress(res)}
