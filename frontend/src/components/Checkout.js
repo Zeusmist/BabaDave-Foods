@@ -1,16 +1,13 @@
 /* eslint-disable eqeqeq */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  lagos_coords,
-  mainland_level1_coords,
-  office_coords,
-} from "../utils/map";
+import { toMoney } from "../utils/cart";
+import { delivery_polygons } from "../utils/map";
 import AddressFinder from "./Address/AddressFinder";
 
 // TODO: handle check discount, calculate and include delivery fee, handle checkout & clear cart from local storage
 
-let map;
+const google = window.google;
 
 const RenderSection = (p) => {
   return (
@@ -21,10 +18,27 @@ const RenderSection = (p) => {
   );
 };
 
-const toMoney = (numberVal) =>
-  `₦${numberVal.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-  })}`;
+const renderInformationFlex = (dataList) => (
+  <div className="d-flex">
+    <div className="me-3">
+      {dataList.map((data, i) => (
+        <div key={i} className={`${data.id == "total" && "mt-3"} fw-bold`}>
+          {data.label}:
+        </div>
+      ))}
+    </div>
+    <div>
+      {dataList.map((data, i) => (
+        <div
+          key={i}
+          className={`${data.id == "total" ? "fw-bold mt-3" : "fw-light"}`}
+        >
+          {data.value}
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 const Checkout = (props) => {
   const { info } = useSelector((state) => state.user);
@@ -32,16 +46,31 @@ const Checkout = (props) => {
 
   const [discountCode, setDiscountCode] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [discountAmount, setDiscountAmount] = useState(null);
-  const initialOrderData = [{ label: "Subtotal", value: toMoney(cartTotal) }];
-  const [orderData, setOrderData] = useState(initialOrderData);
-  const [checkoutPrice, setCheckoutPrice] = useState(cartTotal);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [deliveryFee, setDeliveryFee] = useState(0);
+  const [orderData, setOrderData] = useState([
+    { id: "subtotal", label: "Subtotal", value: toMoney(cartTotal) },
+    { id: "discount", label: "Discount", value: toMoney(discountAmount) },
+    { id: "delivery", label: "Delivery Fee", value: toMoney(deliveryFee) },
+  ]);
+  const [polygons, setPolygons] = useState([]);
 
   const userData = [
     { label: "Full name", value: `${info?.firstName} ${info?.lastName}` },
     { label: "Email", value: info?.email },
     { label: "Phone", value: info?.phone },
   ];
+
+  useEffect(() => {
+    let _polygons = [];
+    delivery_polygons.forEach((dp) => {
+      const polygon = new google.maps.Polygon({
+        paths: dp.coords,
+      });
+      _polygons.push({ id: dp.id, polygon });
+    });
+    setPolygons(_polygons);
+  }, []);
 
   useEffect(() => {
     if (discountPercentage) {
@@ -52,19 +81,22 @@ const Checkout = (props) => {
 
   useEffect(() => {
     if (discountAmount) {
-      console.log("order data", orderData);
-      setOrderData([
-        ...initialOrderData,
-        {
-          type: "discount",
-          label: "Discount",
-          value: toMoney(discountAmount) + ` (${discountPercentage}%)`,
-        },
-      ]);
-      setCheckoutPrice(cartTotal - discountAmount);
+      const discountIndex = orderData.findIndex((od) => od.id == "discount");
+      let updated = orderData;
+      updated[discountIndex].value = `${toMoney(
+        discountAmount
+      )} (${discountPercentage}%)`;
+      setOrderData([...updated]);
+    }
+    if (deliveryFee) {
+      console.log({ deliveryFee });
+      const discountIndex = orderData.findIndex((od) => od.id == "delivery");
+      let updated = orderData;
+      updated[discountIndex].value = toMoney(deliveryFee);
+      setOrderData([...updated]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [discountAmount]);
+  }, [discountAmount, deliveryFee]);
 
   const applyDiscount = (e) => {
     e.preventDefault();
@@ -76,54 +108,33 @@ const Checkout = (props) => {
 
   const handleCheckout = () => {};
 
-  const renderInformationFlex = (dataList) => (
-    <div className="d-flex">
-      <div className="me-3">
-        {dataList.map((data, i) => (
-          <div key={i} className="fw-bold">
-            {data.label}:
-          </div>
-        ))}
-      </div>
-      <div>
-        {dataList.map((data, i) => (
-          <div key={i} className={`${data.isTotal ? "fw-bold" : "fw-light"}`}>
-            {data.value}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  const determineDeliveryFee = (selectedAddress) => {
+    const coords = selectedAddress?.coords;
+    let polygonForCoords = {};
+    if (coords) {
+      polygonForCoords = polygons.find((p) =>
+        google.maps.geometry.poly.containsLocation(
+          new google.maps.LatLng(coords.lat, coords.lng),
+          p.polygon
+        )
+      );
+    }
+    const fee =
+      delivery_polygons.find((dp) => dp.id == polygonForCoords?.id)
+        ?.delivery_fee ?? "0";
+    setDeliveryFee(fee);
+  };
 
-  // CODE BELOW IS FOR TESTING MAP LOGIC
-  const mapRef = useRef();
-  useEffect(() => {
-    map = new window.google.maps.Map(mapRef.current, {
-      center: office_coords,
-      zoom: 11,
-    });
-
-    // const cityCircle = new window.google.maps.Circle({
-    //   map,
-    //   center: lagos_coords,
-    //   radius: 20000,
-    // });
-    const polygon = new window.google.maps.Polygon({
-      paths: mainland_level1_coords,
-    });
-    polygon.setMap(map);
-  }, []);
+  const checkoutPrice = cartTotal - discountAmount + deliveryFee;
 
   return (
     <div>
-      <div ref={mapRef} style={{ height: 300, width: "100%" }}></div>
-
       <RenderSection title="Contact Details">
         {renderInformationFlex(userData)}
       </RenderSection>
 
       <RenderSection title="Delivery Address">
-        <AddressFinder />
+        <AddressFinder processLocation={determineDeliveryFee} />
       </RenderSection>
 
       <RenderSection title="Order Total">
@@ -149,13 +160,17 @@ const Checkout = (props) => {
 
           <div className="col-md" style={{ marginTop: "-5px" }}>
             {renderInformationFlex(
-              orderData.concat([
-                {
-                  label: "Total",
-                  value: toMoney(checkoutPrice),
-                  isTotal: true,
-                },
-              ])
+              orderData
+                .concat([
+                  {
+                    id: "total",
+                    label: "Total",
+                    value: toMoney(checkoutPrice),
+                  },
+                ])
+                .filter((od) =>
+                  od.id == "discount" ? discountAmount > 0 : true
+                )
             )}
           </div>
         </div>

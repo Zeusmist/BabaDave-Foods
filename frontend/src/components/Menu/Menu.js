@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addItem, removeItem } from "../../redux/slices/cart";
 import { PlusSquare } from "react-feather";
 import { useHistory } from "react-router-dom";
+import { toMoney } from "../../utils/cart";
 
 const demo_products = [
   { id: "spag", title: "spag", images: allProductImages.spag, price: "150.40" },
@@ -111,9 +112,7 @@ const Menu = (props) => {
         >
           VIEW CART
         </div>
-        <div>
-          ₦{cartTotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-        </div>
+        <div>{toMoney(cartTotal)}</div>
       </div>
     </div>
   );

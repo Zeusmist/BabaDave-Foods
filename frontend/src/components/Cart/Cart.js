@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import CartItem from "./CartItem";
+import { toMoney } from "../../utils/cart";
 
 const Cart = (props) => {
   const { cartItems, cartTotal } = useSelector((state) => state.cart);
@@ -43,12 +44,7 @@ const Cart = (props) => {
           <div className="d-flex flex-column mt-3" style={{ zIndex: 2 }}>
             <div className="d-flex justify-content-end me-3 fw-bold">
               <div>Subtotal: </div>
-              <div className="btn p-0 ms-2">
-                ₦
-                {cartTotal.toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                })}
-              </div>
+              <div className="btn p-0 ms-2">{toMoney(cartTotal)}</div>
             </div>
             <div
               className="btn btn-success p-3 rounded-0 mt-3"

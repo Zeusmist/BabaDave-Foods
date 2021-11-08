@@ -82,36 +82,43 @@ const island_level3_coords = [ajah2_coords, sangotedo_coords];
 
 export const delivery_polygons = [
   {
+    id: "ML1",
     title: "Mainland level 1",
     delivery_fee: 1700,
     coords: mainland_level1_coords,
   },
   {
+    id: "ML2",
     title: "Mainland level 2",
     delivery_fee: 2000,
     coords: mainland_level2_coords,
   },
   {
+    id: "ML3",
     title: "Mainland level 3",
     delivery_fee: 2500,
     coords: mainland_level3_coords,
   },
   {
+    id: "ML4",
     title: "Mainland level 4",
     delivery_fee: 3000,
     coords: mainland_level4_coords,
   },
   {
+    id: "IL1",
     title: "Island level 1",
     delivery_fee: 2000,
     coords: island_level1_coords,
   },
   {
+    id: "IL2",
     title: "Island level 2",
     delivery_fee: 2500,
     coords: island_level2_coords,
   },
   {
+    id: "IL3",
     title: "Island level 3",
     delivery_fee: 3000,
     coords: island_level3_coords,

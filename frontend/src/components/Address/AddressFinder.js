@@ -1,5 +1,5 @@
 /* eslint-disable eqeqeq */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Home } from "react-feather";
 import { useSelector } from "react-redux";
 import ChangeAddress from "./ChangeAddress";
@@ -17,6 +17,11 @@ const AddressFinder = (props) => {
     if (address) setSelectedAddress(address);
     setIsAddingAddress(false);
   };
+
+  useEffect(() => {
+    props.processLocation(selectedAddress);
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [selectedAddress]);
 
   return (
     <div>

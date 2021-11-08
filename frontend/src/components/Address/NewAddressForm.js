@@ -127,7 +127,7 @@ const NewAddressForm = (props) => {
                     street: formatAddress(res),
                     coords: {
                       lat: res.geometry.location.lat(),
-                      long: res.geometry.location.lng(),
+                      lng: res.geometry.location.lng(),
                     },
                   });
                 }}

@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { MinusSquare, PlusSquare, X } from "react-feather";
 import { removeItem, updateItem } from "../../redux/slices/cart";
 import { useEffect } from "react";
+import { toMoney } from "../../utils/cart";
 
 const CartItem = (props) => {
   const { item, i, cartItemsLength } = props;
@@ -26,12 +27,7 @@ const CartItem = (props) => {
           </div>
         </div>
         <div className="text-end">
-          <div>
-            ₦
-            {(item.price * item.quantity).toLocaleString("en-US", {
-              minimumFractionDigits: 2,
-            })}
-          </div>
+          <div>{toMoney(item.price * item.quantity)}</div>
           <div className="d-flex align-items-center justify-content-end">
             <div
               className="btn p-0"
