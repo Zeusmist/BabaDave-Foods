@@ -6,10 +6,14 @@ export const cartSlice = createSlice({
     cartItems: [],
     cartQuantity: 0,
     cartTotal: 0.0,
+    additionalInfo: "",
   },
   reducers: {
     populateCart: (state, action) => {
       state.cartItems = [...action.payload.items];
+    },
+    resetCart: (state) => {
+      state.cartItems = [];
     },
     addItem: (state, action) => {
       const { itemIndex, item } = action.payload;
@@ -30,16 +34,21 @@ export const cartSlice = createSlice({
     setCartTotal: (state, action) => {
       state.cartTotal = action.payload;
     },
+    setAdditionalInfo: (state, action) => {
+      state.additionalInfo = action.payload;
+    },
   },
 });
 
 export const {
   populateCart,
+  resetCart,
   addItem,
   removeItem,
   updateItem,
   setCartQuantity,
   setCartTotal,
+  setAdditionalInfo,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

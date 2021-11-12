@@ -1,12 +1,12 @@
 /* eslint-disable eqeqeq */
-import "../styles/Content.scss";
-import Menu from "./Menu/Menu";
-import Cart from "./Cart/Cart";
+import "../../styles/Content.scss";
+import Menu from "../../components/Menu/Menu";
+import Cart from "../../components/Cart/Cart";
 import { Switch, Route, useLocation, useHistory } from "react-router-dom";
-import Checkout from "./Checkout";
-import Authenticate from "./Authenticate";
+import Checkout from "../../components/Checkout";
+import Authenticate from "../../components/Authenticate";
 import { useEffect } from "react";
-import Account from "./Account";
+import Account from "../../components/Account";
 import { useSelector } from "react-redux";
 
 const Page = ({ children, title, id, auth }) => {
@@ -32,7 +32,7 @@ const Content = (props) => {
     { id: "/cart", title: "REVIEW CART", component: Cart },
     { id: "/checkout", title: "CHECKOUT", component: Checkout, auth: true },
     { id: "/my-account", title: "MY ACCOUNT", component: Account, auth: true },
-    { id: "/login", title: "LOG IN", component: Authenticate },
+    { id: "/login", title: "LOGIN", component: Authenticate },
     {
       id: "/signup",
       title: "SIGN UP",
@@ -48,7 +48,7 @@ const Content = (props) => {
   return (
     <div className="d-flex flex-column rounded-top content-container mt-3">
       <div className="fw-bold fs-4 text-center mb-4 mt-2">
-        {activePage.title}
+        {activePage?.title}
       </div>
       <Switch>
         {content_pages.map((page, i) => (

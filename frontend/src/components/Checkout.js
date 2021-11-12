@@ -1,59 +1,39 @@
 /* eslint-disable eqeqeq */
+import { addDoc, collection } from "@firebase/firestore";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router";
+import { db } from "../config";
+import { resetCart, setAdditionalInfo } from "../redux/slices/cart";
+import { addOrder } from "../redux/slices/user";
 import { toMoney } from "../utils/cart";
 import { delivery_polygons } from "../utils/map";
 import AddressFinder from "./Address/AddressFinder";
+import { renderInformationFlex, RenderSection } from "./Checkout/utils";
 
 // TODO: handle check discount, calculate and include delivery fee, handle checkout & clear cart from local storage
 
 const google = window.google;
 
-const RenderSection = (p) => {
-  return (
-    <div className="m-4 mt-0">
-      <div className="fs-5 fw-bold mb-2">{p.title}</div>
-      {p.children}
-    </div>
-  );
-};
-
-const renderInformationFlex = (dataList) => (
-  <div className="d-flex">
-    <div className="me-3">
-      {dataList.map((data, i) => (
-        <div key={i} className={`${data.id == "total" && "mt-3"} fw-bold`}>
-          {data.label}:
-        </div>
-      ))}
-    </div>
-    <div>
-      {dataList.map((data, i) => (
-        <div
-          key={i}
-          className={`${data.id == "total" ? "fw-bold mt-3" : "fw-light"}`}
-        >
-          {data.value}
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
 const Checkout = (props) => {
   const { info } = useSelector((state) => state.user);
-  const { cartTotal } = useSelector((state) => state.cart);
+  const { cartTotal, cartItems, additionalInfo } = useSelector(
+    (state) => state.cart
+  );
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   const [discountCode, setDiscountCode] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [deliveryFee, setDeliveryFee] = useState(0);
-  const [orderData, setOrderData] = useState([
+  const [orderInfo, setOrderInfo] = useState([
     { id: "subtotal", label: "Subtotal", value: toMoney(cartTotal) },
     { id: "discount", label: "Discount", value: toMoney(discountAmount) },
     { id: "delivery", label: "Delivery Fee", value: toMoney(deliveryFee) },
   ]);
   const [polygons, setPolygons] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
 
   const userData = [
     { label: "Full name", value: `${info?.firstName} ${info?.lastName}` },
@@ -62,6 +42,7 @@ const Checkout = (props) => {
   ];
 
   useEffect(() => {
+    while (!google) setTimeout(() => {}, 300);
     let _polygons = [];
     delivery_polygons.forEach((dp) => {
       const polygon = new google.maps.Polygon({
@@ -74,26 +55,27 @@ const Checkout = (props) => {
 
   useEffect(() => {
     if (discountPercentage) {
-      setDiscountAmount(cartTotal * (discountPercentage / 100));
+      setDiscountAmount(
+        Number((cartTotal * (discountPercentage / 100)).toFixed(2))
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discountPercentage]);
 
   useEffect(() => {
     if (discountAmount) {
-      const discountIndex = orderData.findIndex((od) => od.id == "discount");
-      let updated = orderData;
+      const discountIndex = orderInfo.findIndex((od) => od.id == "discount");
+      let updated = orderInfo;
       updated[discountIndex].value = `${toMoney(
         discountAmount
       )} (${discountPercentage}%)`;
-      setOrderData([...updated]);
+      setOrderInfo([...updated]);
     }
     if (deliveryFee) {
-      console.log({ deliveryFee });
-      const discountIndex = orderData.findIndex((od) => od.id == "delivery");
-      let updated = orderData;
+      const discountIndex = orderInfo.findIndex((od) => od.id == "delivery");
+      let updated = orderInfo;
       updated[discountIndex].value = toMoney(deliveryFee);
-      setOrderData([...updated]);
+      setOrderInfo([...updated]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discountAmount, deliveryFee]);
@@ -106,10 +88,10 @@ const Checkout = (props) => {
     setDiscountCode("");
   };
 
-  const handleCheckout = () => {};
+  const processLocation = (address) => {
+    setSelectedAddress(address);
 
-  const determineDeliveryFee = (selectedAddress) => {
-    const coords = selectedAddress?.coords;
+    const coords = address?.coords;
     let polygonForCoords = {};
     if (coords) {
       polygonForCoords = polygons.find((p) =>
@@ -125,7 +107,38 @@ const Checkout = (props) => {
     setDeliveryFee(fee);
   };
 
-  const checkoutPrice = cartTotal - discountAmount + deliveryFee;
+  const checkoutPrice = Number(
+    (cartTotal - discountAmount + Number(deliveryFee)).toFixed(2)
+  );
+
+  const handleCheckout = async () => {
+    // send data to database and cleanup client on success
+    const orderData = {
+      userID: info.id,
+      name: info?.firstName + " " + info?.lastName,
+      email: info?.email,
+      phone: info?.phone,
+      address: selectedAddress.addressAsText,
+      items: cartItems,
+      additionalInfo,
+      cartTotal,
+      discountAmount: discountAmount,
+      deliveryFee: deliveryFee,
+      total: checkoutPrice,
+    };
+
+    await addDoc(collection(db, "orders"), orderData)
+      .then((docRef) => {
+        dispatch(addOrder({ order: { id: docRef.id, ...orderData } }));
+        dispatch(resetCart());
+        dispatch(setAdditionalInfo(""));
+        history.push("/my-account");
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("an error occurred during checkout");
+      });
+  };
 
   return (
     <div>
@@ -134,7 +147,7 @@ const Checkout = (props) => {
       </RenderSection>
 
       <RenderSection title="Delivery Address">
-        <AddressFinder processLocation={determineDeliveryFee} />
+        <AddressFinder processLocation={processLocation} />
       </RenderSection>
 
       <RenderSection title="Order Total">
@@ -160,7 +173,7 @@ const Checkout = (props) => {
 
           <div className="col-md" style={{ marginTop: "-5px" }}>
             {renderInformationFlex(
-              orderData
+              orderInfo
                 .concat([
                   {
                     id: "total",

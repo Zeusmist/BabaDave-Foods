@@ -1,24 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { signOut } from "@firebase/auth";
-import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { auth } from "../config";
-import { removeInfo } from "../redux/slices/user";
+import { logoutUser } from "../utils/auth";
 
 const Account = (props) => {
-  const dispatch = useDispatch();
   const history = useHistory();
 
   const handleLogout = async () => {
-    await signOut(auth)
-      .then(() => {
-        dispatch(removeInfo());
-        history.push("/menu");
-      })
-      .catch((err) => {
-        console.log(err.code + ": " + err.message);
-        alert(`${err.code}`.replace("auth/", "").replaceAll("-", " "));
-      });
+    await logoutUser().then(() => {
+      history.push("/menu");
+    });
   };
 
   return (

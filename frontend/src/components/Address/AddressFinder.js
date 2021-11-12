@@ -9,6 +9,12 @@ const AddressFinder = (props) => {
   const { addresses } = useSelector((state) => state.user);
   const [selectedAddress, setSelectedAddress] = useState(addresses[0] ?? null);
 
+  const addressAsText = selectedAddress
+    ? `${selectedAddress.number ? selectedAddress.number + "," : ""} ${
+        selectedAddress?.street
+      }`
+    : null;
+
   const handleNewAddress = ({ id, address }) => {
     if (id) {
       const index = addresses.findIndex((a) => a.id == id);
@@ -19,7 +25,7 @@ const AddressFinder = (props) => {
   };
 
   useEffect(() => {
-    props.processLocation(selectedAddress);
+    props.processLocation({ ...selectedAddress, addressAsText });
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [selectedAddress]);
 
@@ -31,11 +37,7 @@ const AddressFinder = (props) => {
         }`}
       >
         {<Home className="me-1" size={20} strokeWidth={3} />}
-        {selectedAddress
-          ? `${selectedAddress.number ? selectedAddress.number + "," : ""} ${
-              selectedAddress?.street
-            }`
-          : "No saved address"}
+        {selectedAddress ? addressAsText : "No saved address"}
       </div>
       {!isAddingAddress && (
         <div

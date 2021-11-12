@@ -1,13 +1,13 @@
 /* eslint-disable eqeqeq */
 import { Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import logo from "../assets/logo1.jpg";
-import "../styles/Nav.scss";
+import logo from "../../assets/logo1.jpg";
+import "../../styles/Nav.scss";
 import { BookOpen, LogIn, ShoppingBag, User } from "react-feather";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
-export const Nav = (props) => {
+const Nav = (props) => {
   const history = useHistory();
   const { info } = useSelector((state) => state.user);
 
@@ -92,3 +92,5 @@ export const Nav = (props) => {
     </Row>
   );
 };
+
+export default Nav;

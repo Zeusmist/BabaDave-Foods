@@ -39,8 +39,9 @@ class Authenticate extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    const { isAdmin } = this.props;
     if (!prevProps.info && !!this.props.info) {
-      this.props.history.push("/cart");
+      this.props.history.push(isAdmin ? "/admin" : "/cart");
     }
   }
 
@@ -86,9 +87,11 @@ class Authenticate extends React.Component {
 
   loginUser = () => {
     const { email, password } = this.state;
+    const { isAdmin } = this.props;
+    console.log("logging in", { isAdmin });
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        this.props.history.push("/menu");
+        this.props.history.push(isAdmin ? "/admin" : "/menu");
       })
       .catch((err) => {
         console.log(err.code + ": " + err.message);
@@ -138,8 +141,9 @@ class Authenticate extends React.Component {
   }
 }
 
-const mapState = (state) => {
-  const { info } = state.user;
+const mapState = (state, props) => {
+  console.log({ props });
+  const { info } = state[props.isAdmin ? "admin" : "user"];
   return { info };
 };
 

@@ -1,10 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import cartReducer from "./slices/cart";
 import userReducer from "./slices/user";
+import adminReducer from "./slices/admin";
 
-export default configureStore({
+const store = configureStore({
   reducer: {
     cart: cartReducer,
     user: userReducer,
+    admin: adminReducer,
   },
 });
+
+export default store;
