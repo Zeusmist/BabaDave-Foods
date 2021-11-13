@@ -6,7 +6,7 @@ import { Switch, Route, useLocation, useHistory } from "react-router-dom";
 import Checkout from "../../components/Checkout";
 import Authenticate from "../../components/Authenticate";
 import { useEffect } from "react";
-import Account from "../../components/Account";
+import Account from "../../components/Account/Account";
 import { useSelector } from "react-redux";
 
 const Page = ({ children, title, id, auth }) => {
@@ -31,7 +31,13 @@ const Content = (props) => {
     { id: "/menu", title: "MENU", component: Menu },
     { id: "/cart", title: "REVIEW CART", component: Cart },
     { id: "/checkout", title: "CHECKOUT", component: Checkout, auth: true },
-    { id: "/my-account", title: "MY ACCOUNT", component: Account, auth: true },
+    {
+      id: "/my-account",
+      title: "MY ACCOUNT",
+      component: Account,
+      auth: true,
+      hideTitle: true,
+    },
     { id: "/login", title: "LOGIN", component: Authenticate },
     {
       id: "/signup",
@@ -47,9 +53,11 @@ const Content = (props) => {
 
   return (
     <div className="d-flex flex-column rounded-top content-container mt-3">
-      <div className="fw-bold fs-4 text-center mb-4 mt-2">
-        {activePage?.title}
-      </div>
+      {!activePage?.hideTitle && (
+        <div className="fw-bold fs-4 text-center mb-4 mt-2">
+          {activePage?.title}
+        </div>
+      )}
       <Switch>
         {content_pages.map((page, i) => (
           <Route key={i} path={`${page.id}`} exact={page.id == "/"}>

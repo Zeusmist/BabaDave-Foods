@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useHistory } from "react-router-dom";
-import { logoutUser } from "../utils/auth";
+import { logoutUser } from "../../utils/auth";
+import Header from "./Header";
 
 const Account = (props) => {
   const history = useHistory();
@@ -14,7 +15,7 @@ const Account = (props) => {
   return (
     <div>
       <div>
-        <div onClick={handleLogout}>Logout</div>
+        <Header handleLogout={handleLogout} />
       </div>
     </div>
   );

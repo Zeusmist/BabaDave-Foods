@@ -1,0 +1,40 @@
+.header-container {
+  padding-top: 25px;
+  padding-left: 13px;
+
+  .header-image {
+    height: 160px;
+    width: 160px;
+  }
+
+  .header-buttons {
+    .button {
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .header-container {
+    .header-image {
+      height: 65px;
+      width: 65px;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .header-container {
+    // padding-top: 30px;
+
+    .header-description {
+      text-align: center;
+    }
+
+    .header-buttons {
+      justify-content: center;
+    }
+  }
+}
