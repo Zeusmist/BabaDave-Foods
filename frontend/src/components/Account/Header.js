@@ -75,6 +75,7 @@ const Header = (props) => {
             .filter((si) => (isEditing ? si.id == "edit" : true))
             .map((b, i) => (
               <div
+                key={i}
                 className={`button border-0 btn btn${`-outline-${
                   isEditing
                     ? "success"

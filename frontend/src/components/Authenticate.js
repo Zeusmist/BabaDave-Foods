@@ -142,7 +142,6 @@ class Authenticate extends React.Component {
 }
 
 const mapState = (state, props) => {
-  console.log({ props });
   const { info } = state[props.isAdmin ? "admin" : "user"];
   return { info };
 };
