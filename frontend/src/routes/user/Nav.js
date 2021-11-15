@@ -1,7 +1,7 @@
 /* eslint-disable eqeqeq */
 import { Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import logo from "../../assets/logo1.jpg";
+import logo from "../../assets/logo1_cropped.jpg";
 import "../../styles/Nav.scss";
 import { BookOpen, LogIn, ShoppingBag, User } from "react-feather";
 import { useSelector } from "react-redux";

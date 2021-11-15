@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   info: null,
   addresses: [],
-  orders: [],
+  // orders: [],
 };
 
 export const userSlice = createSlice({
@@ -37,10 +37,10 @@ export const userSlice = createSlice({
     },
 
     // ORDERS
-    addOrder: (state, action) => {
-      const { order } = action.payload;
-      state.orders.push(order);
-    },
+    // addOrder: (state, action) => {
+    //   const { order } = action.payload;
+    //   state.orders.push(order);
+    // },
   },
 });
 
@@ -50,6 +50,6 @@ export const {
   addAddress,
   updateAddress,
   removeAddress,
-  addOrder,
+  // addOrder,
 } = userSlice.actions;
 export default userSlice.reducer;

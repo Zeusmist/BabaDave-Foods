@@ -29,8 +29,16 @@ const Header = (props) => {
       label: isEditing ? "Close edit" : "Edit Profile",
       onClick: () => setIsEditing(!isEditing),
     },
-    { label: "Orders", onClick: () => {} },
-    { label: "Addresses", onClick: () => {} },
+    {
+      id: "orders",
+      label: "Orders",
+      onClick: () => props.setActiveView("orders"),
+    },
+    {
+      id: "addresses",
+      label: "Addresses",
+      onClick: () => props.setActiveView("addresses"),
+    },
     { id: "logout", label: "Logout", onClick: props.handleLogout },
   ];
 
@@ -78,11 +86,15 @@ const Header = (props) => {
                 key={i}
                 className={`button border-0 btn btn${`-outline-${
                   isEditing
-                    ? "success"
+                    ? "danger"
                     : b.id == "logout"
                     ? "danger"
                     : "secondary"
-                }`} p-1 ${i > 0 && "ms-2"} m-1`}
+                }`} p-1 ${i > 0 && "ms-2"} m-1 ${
+                  props.activeView == b.id
+                    ? "active text-decoration-underline"
+                    : ""
+                }`}
                 onClick={b.onClick}
                 style={{ background: "none" }}
               >

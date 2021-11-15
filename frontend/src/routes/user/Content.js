@@ -3,7 +3,7 @@ import "../../styles/Content.scss";
 import Menu from "../../components/Menu/Menu";
 import Cart from "../../components/Cart/Cart";
 import { Switch, Route, useLocation, useHistory } from "react-router-dom";
-import Checkout from "../../components/Checkout";
+import Checkout from "../../components/Checkout/Checkout";
 import Authenticate from "../../components/Authenticate";
 import { useEffect } from "react";
 import Account from "../../components/Account/Account";

@@ -1,15 +1,15 @@
 /* eslint-disable eqeqeq */
-import { addDoc, collection } from "@firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "@firebase/firestore";
 import { useEffect, useState } from "react";
+import { PaystackButton } from "react-paystack";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router";
-import { db } from "../config";
-import { resetCart, setAdditionalInfo } from "../redux/slices/cart";
-import { addOrder } from "../redux/slices/user";
-import { toMoney } from "../utils/cart";
-import { delivery_polygons } from "../utils/map";
-import AddressFinder from "./Address/AddressFinder";
-import { renderInformationFlex, RenderSection } from "./Checkout/utils";
+import { db } from "../../config";
+import { resetCart, setAdditionalInfo } from "../../redux/slices/cart";
+import { toMoney } from "../../utils/cart";
+import { delivery_polygons } from "../../utils/map";
+import AddressFinder from "../Address/AddressFinder";
+import { renderInformationFlex, RenderSection } from "./utils";
 
 // TODO: handle check discount, calculate and include delivery fee, handle checkout & clear cart from local storage
 
@@ -121,15 +121,15 @@ const Checkout = (props) => {
       address: selectedAddress.addressAsText,
       items: cartItems,
       additionalInfo,
-      cartTotal,
+      cartTotal: Number(cartTotal.toFixed(2)),
       discountAmount: discountAmount,
       deliveryFee: deliveryFee,
       total: checkoutPrice,
+      createdAt: serverTimestamp(),
     };
 
     await addDoc(collection(db, "orders"), orderData)
       .then((docRef) => {
-        dispatch(addOrder({ order: { id: docRef.id, ...orderData } }));
         dispatch(resetCart());
         dispatch(setAdditionalInfo(""));
         history.push("/my-account");
@@ -138,6 +138,22 @@ const Checkout = (props) => {
         console.log(err);
         alert("an error occurred during checkout");
       });
+  };
+
+  const paystackProps = {
+    email: info?.email,
+    amount: checkoutPrice * 100,
+    metadata: {
+      name: info?.firstName + " " + info?.lastName,
+      phone: info?.phone,
+    },
+    publicKey: "",
+    text: "Make Payment",
+    onSuccess: () => {
+      handleCheckout();
+      alert("Thanks for doing business with us! Come back soon!!");
+    },
+    onClose: () => alert("Wait! You need this oil, don't go!!!!"),
   };
 
   return (
@@ -187,12 +203,11 @@ const Checkout = (props) => {
             )}
           </div>
         </div>
-        <div
+        <PaystackButton
           className="btn btn-success btn-lg w-100 mt-5"
-          onClick={handleCheckout}
-        >
-          Make Payment
-        </div>
+          {...paystackProps}
+        />
+        <button onClick={handleCheckout}>SU</button>
       </RenderSection>
     </div>
   );
