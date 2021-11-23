@@ -28,7 +28,7 @@ const inputFields = [
 class Authenticate extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { isProcessing: false };
   }
 
   componentDidMount() {
@@ -47,9 +47,13 @@ class Authenticate extends React.Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { signup } = this.props;
-    if (signup) this.registerUser();
-    else this.loginUser();
+    console.log("processing request");
+    this.setState({ isProcessing: true }, async () => {
+      const { signup } = this.props;
+      if (signup) await this.registerUser();
+      else await this.loginUser();
+      this.setState({ isProcessing: false });
+    });
   };
 
   registerUser = async () => {
@@ -85,11 +89,11 @@ class Authenticate extends React.Component {
     });
   };
 
-  loginUser = () => {
+  loginUser = async () => {
     const { email, password } = this.state;
     const { isAdmin } = this.props;
     console.log("logging in", { isAdmin });
-    signInWithEmailAndPassword(auth, email, password)
+    await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         this.props.history.push(isAdmin ? "/admin" : "/menu");
       })
@@ -104,6 +108,7 @@ class Authenticate extends React.Component {
 
   render() {
     const { signup } = this.props;
+    const { isProcessing } = this.state;
     return (
       <div>
         <form onSubmit={this.handleSubmit} className="px-3 mb-5">
@@ -131,7 +136,10 @@ class Authenticate extends React.Component {
           {!signup && <div className="btn p-0 mb-3">Forgot password?</div>}
           <input
             type="submit"
-            value={!signup ? "LOG IN" : "SIGN UP"}
+            value={
+              !isProcessing ? (!signup ? "LOG IN" : "SIGN UP") : "Processing..."
+            }
+            disabled={isProcessing}
             className="btn w-100"
             style={{ backgroundColor: "#f68512" }}
           />

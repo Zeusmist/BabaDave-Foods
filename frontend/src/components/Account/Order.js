@@ -6,12 +6,7 @@ import { toMoney } from "../../utils/cart";
 import ModalContainer from "../ModalContainer";
 import OrderDetails from "./OrderDetails";
 import defaultFoodIcon from "../../assets/images/default-food-icon.png";
-
-const statusColors = [
-  { color: "success", codes: ["delivered"] },
-  { color: "warning", codes: ["transit", "received"] },
-  { color: "danger", codes: ["cancelled", "failed"] },
-];
+import { statusColors } from "../../utils/orders";
 
 const Order = (props) => {
   const { data } = props;
@@ -30,8 +25,8 @@ const Order = (props) => {
 
   return (
     <>
-      <div className="d-flex my-5 mx-4 align-items-start">
-        <div className="border border-2">
+      <div className="d-flex my-3 mx-4 align-items-center border rounded p-2 border-2">
+        <div className="">
           <img src={defaultFoodIcon} className="food-image" alt="food pic" />
         </div>
         <div className="ms-3">

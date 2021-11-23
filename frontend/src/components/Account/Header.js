@@ -4,6 +4,7 @@ import { Col, Row } from "react-bootstrap";
 import { Mail, Phone, ShoppingBag } from "react-feather";
 import { useSelector } from "react-redux";
 import defaultLogo from "../../assets/images/default-user-icon.png";
+import SubInfos from "../SubInfos";
 import "./styles.scss";
 
 const Header = (props) => {
@@ -59,24 +60,9 @@ const Header = (props) => {
             {info?.firstName} {info?.lastName}
           </div>
         </div>
-        <div className="header-buttons d-flex pt-2 flex-wrap">
-          {subInfos.map((si, i) => (
-            <div
-              key={i}
-              className={`d-flex align-items-center ${i > 0 && "ms-2"}`}
-            >
-              <div
-                className="p-1 m-1 lh-1 rounded"
-                style={{
-                  border: "1px solid #c0c0c0",
-                }}
-              >
-                <si.Icon className="" size={16} />
-              </div>
-              <div>{si.label}</div>
-            </div>
-          ))}
-        </div>
+
+        <SubInfos subInfos={subInfos} className="header-buttons" />
+
         <div className="header-buttons d-flex pt-2 flex-wrap mt-2">
           {/* Buttons */}
           {buttons

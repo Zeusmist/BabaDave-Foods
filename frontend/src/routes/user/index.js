@@ -42,6 +42,7 @@ class UserRoute extends React.Component {
   };
 
   setUserData = async (uid) => {
+    console.log("Getting user data");
     const { updateInfo, addAddress } = this.props;
     // fetch user data and update in app
 

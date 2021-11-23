@@ -84,8 +84,8 @@ const Checkout = (props) => {
     e.preventDefault();
     // check discountCode validity
 
-    setDiscountPercentage(10);
-    setDiscountCode("");
+    // setDiscountPercentage(10);
+    // setDiscountCode("");
   };
 
   const processLocation = (address) => {
@@ -126,6 +126,7 @@ const Checkout = (props) => {
       deliveryFee: deliveryFee,
       total: checkoutPrice,
       createdAt: serverTimestamp(),
+      status: { code: "pending", label: "Order received" },
     };
 
     await addDoc(collection(db, "orders"), orderData)

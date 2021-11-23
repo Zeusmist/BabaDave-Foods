@@ -1,3 +1,9 @@
+/**
+ * Instructions:
+ * Allow admin to view and manage all orders, add/update products,
+ * add/update discount codes and user information*,
+ */
+
 import { onAuthStateChanged } from "@firebase/auth";
 import { doc, getDoc } from "@firebase/firestore";
 import { Component } from "react";
@@ -7,6 +13,7 @@ import { updateInfo_admin, removeInfo_admin } from "../../redux/slices/admin";
 import Content from "./Content";
 import Nav from "./Nav";
 import { withRouter } from "react-router-dom";
+import Authenticate from "../../components/Authenticate";
 
 class AdminRoute extends Component {
   state = {};
@@ -30,6 +37,7 @@ class AdminRoute extends Component {
   };
 
   verifyAdmin = async (uid) => {
+    console.log("Getting admin data");
     const { updateInfo_admin } = this.props;
     const info_docSnap = await getDoc(doc(db, "admins", uid));
     if (info_docSnap.exists) {
@@ -43,18 +51,31 @@ class AdminRoute extends Component {
 
   render() {
     console.log("rendered root");
-    return (
+    return this.props.adminInfo ? (
       <>
         <Nav />
         <Content />
       </>
+    ) : (
+      <div className="d-flex flex-column justify-content-center h-100">
+        <div className="fw-bold fs-4 text-center mb-4 mt-2">LOGIN ADMIN</div>
+        <Authenticate isAdmin={true} />
+      </div>
     );
   }
 }
+
+const mapState = (state) => {
+  const { admin } = state;
+
+  return {
+    adminInfo: admin.info,
+  };
+};
 
 const mapDispatch = {
   updateInfo_admin,
   removeInfo_admin,
 };
 
-export default withRouter(connect(undefined, mapDispatch)(AdminRoute));
+export default withRouter(connect(mapState, mapDispatch)(AdminRoute));
