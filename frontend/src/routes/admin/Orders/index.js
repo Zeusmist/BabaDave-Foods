@@ -3,7 +3,7 @@ import { collection, getDocs, orderBy, query } from "@firebase/firestore";
 import { useEffect, useState } from "react";
 import RefreshButton from "../../../components/RefreshButton";
 import { db } from "../../../config";
-import OrderItem from "../OrderItem";
+import Order from "./Order";
 import ModalContainer from "../../../components/ModalContainer";
 
 const Orders = (props) => {
@@ -42,7 +42,7 @@ const Orders = (props) => {
     <div>
       {orders.map((order, i) => (
         <div key={i}>
-          <OrderItem data={order} />
+          <Order data={order} />
         </div>
       ))}
       <div className="position-fixed" style={{ bottom: 10, right: 10 }}>

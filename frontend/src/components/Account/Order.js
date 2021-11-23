@@ -7,6 +7,7 @@ import ModalContainer from "../ModalContainer";
 import OrderDetails from "./OrderDetails";
 import defaultFoodIcon from "../../assets/images/default-food-icon.png";
 import { statusColors } from "../../utils/orders";
+import ModalTrigger from "../ModalTrigger";
 
 const Order = (props) => {
   const { data } = props;
@@ -38,14 +39,11 @@ const Order = (props) => {
                 : ""} of {mainItem.title}&nbsp;
             </div>
             {data.items.length > 1 && (
-              <div
-                className="moreBtn"
-                data-bs-toggle="modal"
-                data-bs-target={`#${orderDetailsModal}`}
-                style={{ cursor: "pointer" }}
-              >
-                and {data.items.length - 1} more...
-              </div>
+              <ModalTrigger target={`#${orderDetailsModal}`}>
+                <div className="moreBtn" style={{ cursor: "pointer" }}>
+                  and {data.items.length - 1} more...
+                </div>
+              </ModalTrigger>
             )}
           </div>
           <div className="fw-bold my-2">{toMoney(data.total)}</div>
