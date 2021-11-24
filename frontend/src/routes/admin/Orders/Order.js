@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import {
   Calendar,
   DollarSign,
@@ -12,7 +13,7 @@ import ModalContainer from "../../../components/ModalContainer";
 import ModalTrigger from "../../../components/ModalTrigger";
 import SubInfos from "../../../components/SubInfos";
 import { toMoney } from "../../../utils/cart";
-import { statusColors } from "../../../utils/orders";
+import { orderStatuses } from "../../../utils/orders";
 import OrderItems from "./OrderItems";
 import OrderStatusUpdate from "./OrderStatusUpdate";
 
@@ -75,8 +76,8 @@ const Order = (props) => {
             <div className="d-flex align-items-center">
               <div
                 className={`bg-${
-                  statusColors.find((color) =>
-                    color.codes.includes(data?.status?.code)
+                  orderStatuses.find(
+                    (status) => status.code == data?.status?.code
                   )?.color ?? "secondary"
                 } p-2 rounded-circle`}
               ></div>
@@ -96,7 +97,7 @@ const Order = (props) => {
 
       {/* UPDATE STATUS MODAL */}
       <ModalContainer id={updateStatusModal}>
-        <OrderStatusUpdate data={data} />
+        <OrderStatusUpdate id={data.id} onUpdateStatus={props.onUpdateStatus} />
       </ModalContainer>
 
       {/* ORDER ITEMS MODAL */}

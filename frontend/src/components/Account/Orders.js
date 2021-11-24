@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { db } from "../../config";
+import RefreshButton from "../RefreshButton";
 import Order from "./Order";
 
 const Orders = (props) => {
@@ -20,14 +21,12 @@ const Orders = (props) => {
 
   useEffect(() => {
     (async () => {
-      setIsFetching(true);
       await fetchOrders();
-      setIsFetching(false);
     })();
   }, []);
 
   const fetchOrders = async () => {
-    console.log({ id: info?.id });
+    setIsFetching(true);
     if (info?.id) {
       await getDocs(
         query(
@@ -51,6 +50,7 @@ const Orders = (props) => {
         })
         .catch((err) => console.log(err));
     }
+    setIsFetching(false);
   };
 
   return (
@@ -68,6 +68,9 @@ const Orders = (props) => {
             <Order data={o} />
           </div>
         ))}
+      </div>
+      <div className="position-fixed" style={{ bottom: 10, right: 10 }}>
+        <RefreshButton onRefresh={fetchOrders} />
       </div>
     </div>
   );

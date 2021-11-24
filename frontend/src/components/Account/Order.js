@@ -6,7 +6,7 @@ import { toMoney } from "../../utils/cart";
 import ModalContainer from "../ModalContainer";
 import OrderDetails from "./OrderDetails";
 import defaultFoodIcon from "../../assets/images/default-food-icon.png";
-import { statusColors } from "../../utils/orders";
+import { orderStatuses } from "../../utils/orders";
 import ModalTrigger from "../ModalTrigger";
 
 const Order = (props) => {
@@ -50,8 +50,8 @@ const Order = (props) => {
           <div className="d-flex align-items-center">
             <div
               className={`bg-${
-                statusColors.find((color) =>
-                  color.codes.includes(data?.status?.code)
+                orderStatuses.find(
+                  (status) => status.code == data?.status?.code
                 )?.color ?? "secondary"
               } p-2 rounded-circle`}
             ></div>

@@ -1,26 +1,37 @@
-import { statusColors } from "../../../utils/orders";
+/* eslint-disable eqeqeq */
+import { doc, updateDoc } from "@firebase/firestore";
+import { orderStatuses } from "../../../utils/orders";
+import { db } from "../../../config";
 
 const OrderStatusUpdate = (props) => {
-  const handleStatusUpdate = (code) => {
-    console.log("changed status to ", code);
+  const handleStatusUpdate = async (newStatus) => {
+    await updateDoc(doc(db, `orders/${props.id}`), {
+      status: { code: newStatus.code, label: newStatus.label },
+    })
+      .then(() => {
+        props.onUpdateStatus(newStatus);
+      })
+      .catch((err) => {
+        console.log(err);
+        alert("unable to update order status");
+      });
   };
 
   return (
     <div>
-      {statusColors.map((colorObj, i) => (
-        <div key={i} className="justify-content-center">
-          {colorObj.codes.map((code, idx) => (
+      {orderStatuses
+        .filter((status) => status.code != "cancelled")
+        .map((status, i) => (
+          <div key={i} className="justify-content-center">
             <div
-              key={idx}
-              className={`btn btn-${colorObj.color} text-capitalize w-100 mb-3`}
-              onClick={() => handleStatusUpdate(code)}
+              className={`btn btn-${status.color} text-capitalize w-100 mb-3`}
+              onClick={() => handleStatusUpdate(status)}
               data-bs-dismiss="modal"
             >
-              {code}
+              {status.code}
             </div>
-          ))}
-        </div>
-      ))}
+          </div>
+        ))}
     </div>
   );
 };
