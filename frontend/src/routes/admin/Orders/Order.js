@@ -102,7 +102,10 @@ const Order = (props) => {
 
       {/* ORDER ITEMS MODAL */}
       <ModalContainer id={orderItemsModal}>
-        <OrderItems items={data?.items ?? []} />
+        <OrderItems
+          items={data?.items ?? []}
+          additionalInfo={data?.additionalInfo}
+        />
       </ModalContainer>
     </>
   );

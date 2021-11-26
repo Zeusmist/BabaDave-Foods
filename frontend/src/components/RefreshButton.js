@@ -1,9 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useState } from "react";
 import { RefreshCw } from "react-feather";
 
 const RefreshButton = (props) => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const handleRefresh = () => {
-    props.onRefresh();
+    setIsRefreshing(true);
+    props.onRefresh(() => setIsRefreshing(false));
   };
 
   return (
@@ -11,7 +14,14 @@ const RefreshButton = (props) => {
       className="btn btn-warning rounded-circle p-2 shadow-sm"
       onClick={handleRefresh}
     >
-      <RefreshCw color="#000" />
+      {isRefreshing ? (
+        <div
+          className="spinner-border spinner-border-sm text-secondary m-1 border-1"
+          role="status"
+        ></div>
+      ) : (
+        <RefreshCw color="#000" />
+      )}
     </div>
   );
 };

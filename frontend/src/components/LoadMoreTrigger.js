@@ -21,6 +21,8 @@ const LoadMoreTrigger = ({
   children,
 }) => {
   const [queryObjects, setQueryObjects] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   useEffect(() => {
     console.log("UPDATING LAST VISIBLE DOC");
@@ -43,6 +45,7 @@ const LoadMoreTrigger = ({
   };
 
   const handleLoadMore = async () => {
+    setIsLoading(true);
     if (queryObjects) {
       await getDocs(query(...queryObjects))
         .then((docsSnapshot) => {
@@ -57,15 +60,34 @@ const LoadMoreTrigger = ({
 
           console.log({ fetchedDocs, newLastDoc });
           handleNewData(fetchedDocs, newLastDoc);
+
+          setIsEmpty(true);
+          setTimeout(() => setIsEmpty(false), 500);
         })
         .catch((err) => {
           alert("unable to load more");
           console.log(err);
         });
     } else console.log("queryObjects missing");
+    setIsLoading(false);
   };
 
-  return <div onClick={handleLoadMore}>{children}</div>;
+  return (
+    <div
+      onClick={handleLoadMore}
+      className="d-flex flex-column align-items-center"
+    >
+      {isLoading ? (
+        <div
+          className="spinner-border spinner-border-sm text-secondary border-1"
+          role="status"
+        ></div>
+      ) : (
+        isEmpty && <div>End of list</div>
+      )}
+      {children}
+    </div>
+  );
 };
 
 export default LoadMoreTrigger;

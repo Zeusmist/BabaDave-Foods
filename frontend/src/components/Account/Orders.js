@@ -66,6 +66,11 @@ const Orders = (props) => {
     if (newLastDoc) setLastVisibleDocument(newLastDoc);
   };
 
+  const handleRefresh = async (onComplete) => {
+    await fetchOrders();
+    onComplete();
+  };
+
   return (
     <div>
       <div>
@@ -81,8 +86,7 @@ const Orders = (props) => {
             <Order data={o} />
           </div>
         ))}
-        {/* {orders.length >= 5 && ( */}
-        {true && (
+        {orders.length >= 5 && (
           <LoadMoreTrigger
             collectionPath={collectionPath}
             whereVariables={whereVariables}
@@ -101,7 +105,7 @@ const Orders = (props) => {
         )}
       </div>
       <div className="position-fixed" style={{ bottom: 10, right: 10 }}>
-        <RefreshButton onRefresh={fetchOrders} />
+        <RefreshButton onRefresh={handleRefresh} />
       </div>
     </div>
   );

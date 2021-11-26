@@ -9,6 +9,7 @@ import {
   where,
 } from "@firebase/firestore";
 import { useEffect, useState } from "react";
+import LoadMoreTrigger from "../../../components/LoadMoreTrigger";
 import RefreshButton from "../../../components/RefreshButton";
 import { db } from "../../../config";
 import Order from "./Order";
@@ -16,6 +17,7 @@ import Order from "./Order";
 const Orders = (props) => {
   const [orders, setOrders] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
+  const [lastVisibleDocument, setLastVisibleDocument] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -23,25 +25,42 @@ const Orders = (props) => {
     })();
   }, []);
 
+  const collectionPath = "orders";
+  const whereVariables = ["status.code", "==", "pending"];
+  const orderByVariables = ["createdAt", "asc"];
+  const limitLength = 5;
+
   const fetchOrders = async () => {
     setIsFetching(true);
-    let __orders = [];
+
     await getDocs(
       query(
-        collection(db, "orders"),
-        where("status.code", "==", "pending"),
-        orderBy("createdAt", "asc"),
-        limit(5)
+        collection(db, collectionPath),
+        where(...whereVariables),
+        orderBy(...orderByVariables),
+        limit(limitLength)
       )
     )
       .then((querySnapshot) => {
+        let __orders = [];
         querySnapshot.forEach((doc) => {
           __orders.push({ id: doc.id, ...doc.data() });
         });
         setOrders(__orders);
+
+        if (querySnapshot.docs.length > 0) {
+          setLastVisibleDocument(
+            querySnapshot.docs[querySnapshot.docs.length - 1]
+          );
+        }
       })
       .catch((err) => console.log(err));
     setIsFetching(false);
+  };
+
+  const handleNewData = (newOrders, newLastDoc) => {
+    setOrders([...orders, ...newOrders]);
+    if (newLastDoc) setLastVisibleDocument(newLastDoc);
   };
 
   const handleStatusUpdate = (id, newStatus) => {
@@ -51,6 +70,11 @@ const Orders = (props) => {
       updatedState[updatedIndex].status = newStatus;
       setOrders([...updatedState]);
     }
+  };
+
+  const handleRefresh = async (onComplete) => {
+    await fetchOrders();
+    onComplete();
   };
 
   return (
@@ -72,8 +96,27 @@ const Orders = (props) => {
           />
         </div>
       ))}
+
+      {orders.length >= 5 && (
+        <LoadMoreTrigger
+          collectionPath={collectionPath}
+          whereVariables={whereVariables}
+          orderByVariables={orderByVariables}
+          lastVisibleDocument={lastVisibleDocument}
+          limitLength={limitLength}
+          handleNewData={handleNewData}
+        >
+          <div
+            className="d-flex justify-content-center mb-2"
+            style={{ cursor: "pointer" }}
+          >
+            Load newer orders
+          </div>
+        </LoadMoreTrigger>
+      )}
+
       <div className="position-fixed" style={{ bottom: 10, right: 10 }}>
-        <RefreshButton onRefresh={fetchOrders} />
+        <RefreshButton onRefresh={handleRefresh} />
       </div>
     </div>
   );
